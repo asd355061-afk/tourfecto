@@ -10,7 +10,7 @@ const app = express();
 
 app.use(
   cors({
-    origin:'https://tourfecto.onrender.com/api',
+    origin:'https://tourfecto.onrender.com',
   })
 );
 app.use(express.json());
