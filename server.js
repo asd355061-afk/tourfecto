@@ -8,9 +8,25 @@ const vendorRoutes = require('./src/routes/vendor.routes');
 
 const app = express();
 
+// الدومينات المسموح لها تكلم الـ API. بيتقروا من متغير بيئة CORS_ORIGIN
+// (تقدر تحط أكتر من دومين مفصولين بفاصلة). لو المتغير مش موجود، بيرجع
+// افتراضيًا لدومين الفرونت إند الحالي على Hostinger + رابط الباك إند نفسه.
+const allowedOrigins = (
+  process.env.CORS_ORIGIN ||
+  'https://mediumvioletred-gnat-430087.hostingersite.com,https://tourfecto.onrender.com'
+)
+  .split(',')
+  .map((o) => o.trim());
+
 app.use(
   cors({
-    origin:'https://tourfecto.onrender.com',
+    origin(origin, callback) {
+      // طلبات من أدوات زي curl/Postman مبيبقاش معاها origin أصلاً
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('غير مسموح بهذا الأصل (CORS): ' + origin));
+    },
   })
 );
 app.use(express.json());
